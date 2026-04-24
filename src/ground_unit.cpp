@@ -11,10 +11,13 @@
 #include <PubSubClient.h>
 
 // ============ CONFIGURATION ============
-const char* WIFI_SSID = "YourWiFiSSID";
-const char* WIFI_PASSWORD = "YourWiFiPassword";
+const char* WIFI_SSID = "Dylan";           // wifi ssid
+const char* WIFI_PASSWORD = "koenigsegg";  // wifi password
 const char* MQTT_BROKER = "10.78.57.222";
 const int MQTT_PORT = 1883;
+
+const int NUM_FLOOR_SENSORS = 6;
+const int SENSORS_OK_TO_RESET = 4;
 
 // ============ PINS ============
 // Index 0..3 = Floor 1..4
@@ -31,6 +34,7 @@ WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
 bool floorAlert[4] = { false, false, false, false };
+int floorLowSensorCount[4] = { 0, 0, 0, 0 };  // last known low-sensor count per floor
 unsigned long lastButtonPress[4] = { 0, 0, 0, 0 };
 const unsigned long DEBOUNCE_MS = 200;
 
@@ -92,7 +96,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
   Serial.print("]: ");
   Serial.println(msg);
 
-  // Parse floor number from topic
+  // Parse floor number and subtopic from "warehouse/floor/X/subtopic"
   int firstSlash = topicStr.indexOf('/', 10);  // after "warehouse/"
   int secondSlash = topicStr.indexOf('/', firstSlash + 1);
   if (firstSlash < 0 || secondSlash < 0)
@@ -103,15 +107,20 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
     return;
 
   int idx = floorNum - 1;
-  if (msg == "ALERT")
+  String subtopic = topicStr.substring(secondSlash + 1);
+
+  if (subtopic == "alert")
   {
-    floorAlert[idx] = true;
+    if (msg == "ALERT")
+      floorAlert[idx] = true;
+    else if (msg == "CLEAR")
+      floorAlert[idx] = false;
+    updateLEDs();
   }
-  else if (msg == "CLEAR")
+  else if (subtopic == "sensors")
   {
-    floorAlert[idx] = false;
+    floorLowSensorCount[idx] = msg.toInt();
   }
-  updateLEDs();
 }
 
 void connectWiFi()
@@ -139,8 +148,8 @@ void connectMQTT()
     if (mqttClient.connect(clientId.c_str()))
     {
       Serial.println(" connected.");
-      // Subscribe to all floor alert topics
       mqttClient.subscribe("warehouse/floor/+/alert");
+      mqttClient.subscribe("warehouse/floor/+/sensors");
     }
     else
     {
@@ -201,14 +210,23 @@ void loop()
       lastButtonPress[i] = millis();
       if (floorAlert[i])
       {
-        // NOTE: Per your spec, the floor-side button resets the alert after
-        // restocking. The ground-floor button here is an OPERATOR acknowledge
-        // that clears the local indicator. If you'd rather only clear when
-        // the floor itself confirms, remove the publishAck() call and just
-        // silence the buzzer locally instead.
-        floorAlert[i] = false;
-        updateLEDs();
-        publishAck(i + 1);
+        int sensorsOK = NUM_FLOOR_SENSORS - floorLowSensorCount[i];
+        if (sensorsOK >= SENSORS_OK_TO_RESET)
+        {
+          floorAlert[i] = false;
+          updateLEDs();
+          publishAck(i + 1);
+        }
+        else
+        {
+          Serial.print(">>> Floor ");
+          Serial.print(i + 1);
+          Serial.print(" reset ignored: only ");
+          Serial.print(sensorsOK);
+          Serial.print("/");
+          Serial.print(NUM_FLOOR_SENSORS);
+          Serial.println(" sensors OK. Restock more first.");
+        }
       }
     }
   }

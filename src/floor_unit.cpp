@@ -15,6 +15,9 @@ const int MQTT_PORT = 1883;                // 8883 for encrypted
 // Calibrate based on your tote box dimensions and sensor mounting.
 const int DISTANCE_THRESHOLD_CM = 30;
 
+// Minimum number of sensors that must read within range to allow alert reset.
+const int SENSORS_OK_TO_RESET = 4;
+
 // How often to read sensors (ms)
 const unsigned long SENSOR_INTERVAL_MS = 2000;
 
@@ -28,15 +31,17 @@ const int LED_PIN = 13;
 const int BUZZER_PIN = 14;
 
 // ============ MQTT TOPICS ============
-char topicAlert[40];   // "warehouse/floor/X/alert"   (published)
-char topicStatus[40];  // "warehouse/floor/X/status"  (published, optional)
+char topicAlert[40];    // "warehouse/floor/X/alert"    (published)
+char topicStatus[40];   // "warehouse/floor/X/status"   (published, optional)
+char topicSensors[40];  // "warehouse/floor/X/sensors"  (published, low sensor count)
 
 // ============ STATE ============
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
-bool alertActive = false;  // True when alert is currently published
-bool stockLow = false;     // Current sensor-based stock state
+bool alertActive = false;   // True when alert is currently published
+bool stockLow = false;      // True when any sensor detects low stock
+int lowSensorCount = 0;     // Number of sensors currently reading low stock
 unsigned long lastSensorRead = 0;
 unsigned long lastButtonPress = 0;
 const unsigned long DEBOUNCE_MS = 200;
@@ -60,9 +65,9 @@ long readUltrasonicCM(int trigPin, int echoPin)
   return duration * 0.0343 / 2;
 }
 
-bool checkStockLow()
+int countLowSensors()
 {
-  // Returns true if ANY sensor reads distance greater than threshold
+  // Returns number of sensors reading distance greater than threshold
   // (meaning the totebox stack is too short / depleted)
   int lowCount = 0;
   for (int i = 0; i < NUM_SENSORS; i++)
@@ -81,13 +86,11 @@ bool checkStockLow()
     Serial.println(" cm");
 
     if (dist > DISTANCE_THRESHOLD_CM)
-    {
       lowCount++;
-    }
+
     delay(50);  // Small gap between sensor pulses to prevent crosstalk
   }
-  // Trigger if any sensor reports low stock
-  return (lowCount > 0);
+  return lowCount;
 }
 
 void setLocalAlert(bool on)
@@ -152,8 +155,9 @@ void setup()
   delay(100);
 
   // Build topics
-  snprintf(topicAlert, sizeof(topicAlert), "warehouse/floor/%d/alert", FLOOR_NUMBER);
-  snprintf(topicStatus, sizeof(topicStatus), "warehouse/floor/%d/status", FLOOR_NUMBER);
+  snprintf(topicAlert,   sizeof(topicAlert),   "warehouse/floor/%d/alert",   FLOOR_NUMBER);
+  snprintf(topicStatus,  sizeof(topicStatus),  "warehouse/floor/%d/status",  FLOOR_NUMBER);
+  snprintf(topicSensors, sizeof(topicSensors), "warehouse/floor/%d/sensors", FLOOR_NUMBER);
 
   // Pin setup
   for (int i = 0; i < NUM_SENSORS; i++)
@@ -185,7 +189,13 @@ void loop()
   if (millis() - lastSensorRead >= SENSOR_INTERVAL_MS)
   {
     lastSensorRead = millis();
-    stockLow = checkStockLow();
+    lowSensorCount = countLowSensors();
+    stockLow = (lowSensorCount > 0);
+
+    // Publish current low sensor count so ground unit can gate its reset button
+    char countStr[4];
+    snprintf(countStr, sizeof(countStr), "%d", lowSensorCount);
+    mqttClient.publish(topicSensors, countStr, true);
 
     // Raise alert if stock just went low
     if (stockLow && !alertActive)
@@ -205,7 +215,7 @@ void loop()
     lastButtonPress = millis();
     if (alertActive)
     {
-      if (!stockLow)
+      if ((NUM_SENSORS - lowSensorCount) >= SENSORS_OK_TO_RESET)
       {
         alertActive = false;
         setLocalAlert(false);
@@ -214,7 +224,11 @@ void loop()
       }
       else
       {
-        Serial.println(">>> Reset ignored: stock still low. Please restock first.");
+        Serial.print(">>> Reset ignored: only ");
+        Serial.print(NUM_SENSORS - lowSensorCount);
+        Serial.print("/");
+        Serial.print(NUM_SENSORS);
+        Serial.println(" sensors OK. Please restock more.");
         // Brief buzzer blip as feedback
         digitalWrite(BUZZER_PIN, LOW);
         delay(100);
