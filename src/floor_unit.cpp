@@ -39,14 +39,22 @@ char topicSensors[40];  // "warehouse/floor/X/sensors"  (published, low sensor c
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
-bool alertActive = false;   // True when alert is currently published
-bool stockLow = false;      // True when any sensor detects low stock
-int lowSensorCount = 0;     // Number of sensors currently reading low stock
+bool alertActive = false;  // True when alert is currently published
+bool stockLow = false;     // True when any sensor detects low stock
+int lowSensorCount = 0;    // Number of sensors currently reading low stock
 unsigned long lastSensorRead = 0;
 unsigned long lastButtonPress = 0;
 const unsigned long DEBOUNCE_MS = 200;
 
 // ============ FUNCTIONS ============
+
+void blinkLEDs()
+{
+  digitalWrite(LED_PIN, HIGH);
+  delay(500);
+  digitalWrite(LED_PIN, LOW);
+  delay(500);
+}
 
 long readUltrasonicCM(int trigPin, int echoPin)
 {
@@ -106,7 +114,7 @@ void connectWiFi()
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
-    delay(500);
+    blinkLEDs();
     Serial.print(".");
   }
   Serial.print(" Connected. IP: ");
@@ -155,8 +163,8 @@ void setup()
   delay(100);
 
   // Build topics
-  snprintf(topicAlert,   sizeof(topicAlert),   "warehouse/floor/%d/alert",   FLOOR_NUMBER);
-  snprintf(topicStatus,  sizeof(topicStatus),  "warehouse/floor/%d/status",  FLOOR_NUMBER);
+  snprintf(topicAlert, sizeof(topicAlert), "warehouse/floor/%d/alert", FLOOR_NUMBER);
+  snprintf(topicStatus, sizeof(topicStatus), "warehouse/floor/%d/status", FLOOR_NUMBER);
   snprintf(topicSensors, sizeof(topicSensors), "warehouse/floor/%d/sensors", FLOOR_NUMBER);
 
   // Pin setup

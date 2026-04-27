@@ -45,6 +45,20 @@ const unsigned long BUZZER_PERIOD_MS = 500;  // beeping pattern
 
 // ============ FUNCTIONS ============
 
+void blinkLEDs()
+{
+  for (int i = 0; i < 4; i++)
+  {
+    digitalWrite(FLOOR_LED_PINS[i], HIGH);
+  }
+  delay(500);
+  for (int i = 0; i < 4; i++)
+  {
+    digitalWrite(FLOOR_LED_PINS[i], LOW);
+  }
+  delay(500);
+}
+
 void updateLEDs()
 {
   for (int i = 0; i < 4; i++)
@@ -130,7 +144,7 @@ void connectWiFi()
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
-    delay(500);
+    blinkLEDs();
     Serial.print(".");
   }
   Serial.print(" Connected. IP: ");
