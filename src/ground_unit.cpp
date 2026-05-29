@@ -4,67 +4,50 @@
  *
  * Receives MQTT alerts from floors 1-4.
  * Activates corresponding LED + shared buzzer.
- * Buttons acknowledge each floor's alert (clears the alert and publishes reset).
+ * Alert can only be reset from the floor unit button.
  */
 
 #include <WiFi.h>
 #include <PubSubClient.h>
 
 // ============ CONFIGURATION ============
-const char* WIFI_SSID = "Dylan";           // wifi ssid
-const char* WIFI_PASSWORD = "koenigsegg";  // wifi password
-const char* MQTT_BROKER = "10.78.57.222";
+const char* WIFI_SSID = "Dylan";             // wifi ssid --- Incubus
+const char* WIFI_PASSWORD = "koenigsegg";    // wifi password --- bl1bl1iot
+const char* MQTT_BROKER = "10.239.190.222";  // PC IP --- 10.176.164.72
 const int MQTT_PORT = 1883;
-
-const int NUM_FLOOR_SENSORS = 6;
-const int SENSORS_OK_TO_RESET = 4;
 
 // ============ PINS ============
 // Index 0..3 = Floor 1..4
-const int FLOOR_BUTTON_PINS[4] = { 4, 16, 17, 5 };
 const int FLOOR_LED_PINS[4] = { 33, 25, 26, 27 };
 const int BUZZER_PIN = 13;
-
-// ============ MQTT TOPICS ============
-// Subscribe:  warehouse/floor/+/alert
-// Publish:    warehouse/floor/X/ack  (optional - lets floor unit know GF acknowledged)
 
 // ============ STATE ============
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
 bool floorAlert[4] = { false, false, false, false };
-int floorLowSensorCount[4] = { 0, 0, 0, 0 };  // last known low-sensor count per floor
-unsigned long lastButtonPress[4] = { 0, 0, 0, 0 };
-const unsigned long DEBOUNCE_MS = 200;
 
 // Buzzer pattern (non-blocking beep)
 unsigned long lastBuzzerToggle = 0;
 bool buzzerState = false;
-const unsigned long BUZZER_PERIOD_MS = 500;  // beeping pattern
+const unsigned long BUZZER_PERIOD_MS = 500;
 
 // ============ FUNCTIONS ============
 
 void blinkLEDs()
 {
   for (int i = 0; i < 4; i++)
-  {
     digitalWrite(FLOOR_LED_PINS[i], HIGH);
-  }
   delay(500);
   for (int i = 0; i < 4; i++)
-  {
     digitalWrite(FLOOR_LED_PINS[i], LOW);
-  }
   delay(500);
 }
 
 void updateLEDs()
 {
   for (int i = 0; i < 4; i++)
-  {
     digitalWrite(FLOOR_LED_PINS[i], floorAlert[i] ? HIGH : LOW);
-  }
 }
 
 bool anyAlertActive()
@@ -79,7 +62,6 @@ void handleBuzzer()
 {
   if (anyAlertActive())
   {
-    // Intermittent beep
     if (millis() - lastBuzzerToggle >= BUZZER_PERIOD_MS)
     {
       lastBuzzerToggle = millis();
@@ -99,7 +81,6 @@ void handleBuzzer()
 
 void mqttCallback(char* topic, byte* payload, unsigned int length)
 {
-  // Expected topic: warehouse/floor/X/alert
   String topicStr = String(topic);
   String msg;
   for (unsigned int i = 0; i < length; i++)
@@ -110,8 +91,8 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
   Serial.print("]: ");
   Serial.println(msg);
 
-  // Parse floor number and subtopic from "warehouse/floor/X/subtopic"
-  int firstSlash = topicStr.indexOf('/', 10);  // after "warehouse/"
+  // Parse floor number from "warehouse/floor/X/alert"
+  int firstSlash = topicStr.indexOf('/', 10);
   int secondSlash = topicStr.indexOf('/', firstSlash + 1);
   if (firstSlash < 0 || secondSlash < 0)
     return;
@@ -121,20 +102,12 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
     return;
 
   int idx = floorNum - 1;
-  String subtopic = topicStr.substring(secondSlash + 1);
+  if (msg == "ALERT")
+    floorAlert[idx] = true;
+  else if (msg == "CLEAR")
+    floorAlert[idx] = false;
 
-  if (subtopic == "alert")
-  {
-    if (msg == "ALERT")
-      floorAlert[idx] = true;
-    else if (msg == "CLEAR")
-      floorAlert[idx] = false;
-    updateLEDs();
-  }
-  else if (subtopic == "sensors")
-  {
-    floorLowSensorCount[idx] = msg.toInt();
-  }
+  updateLEDs();
 }
 
 void connectWiFi()
@@ -163,7 +136,6 @@ void connectMQTT()
     {
       Serial.println(" connected.");
       mqttClient.subscribe("warehouse/floor/+/alert");
-      mqttClient.subscribe("warehouse/floor/+/sensors");
     }
     else
     {
@@ -175,17 +147,6 @@ void connectMQTT()
   }
 }
 
-void publishAck(int floorNum)
-{
-  // Publish CLEAR to the floor's alert topic (retained) so the floor unit
-  // and any other subscribers see the cleared state.
-  char topic[40];
-  snprintf(topic, sizeof(topic), "warehouse/floor/%d/alert", floorNum);
-  mqttClient.publish(topic, "CLEAR", true);
-  Serial.print("Acknowledged floor ");
-  Serial.println(floorNum);
-}
-
 // ============ SETUP & LOOP ============
 
 void setup()
@@ -195,7 +156,6 @@ void setup()
 
   for (int i = 0; i < 4; i++)
   {
-    pinMode(FLOOR_BUTTON_PINS[i], INPUT_PULLUP);
     pinMode(FLOOR_LED_PINS[i], OUTPUT);
     digitalWrite(FLOOR_LED_PINS[i], LOW);
   }
@@ -215,35 +175,6 @@ void loop()
   if (!mqttClient.connected())
     connectMQTT();
   mqttClient.loop();
-
-  // Button handling - acknowledge alerts
-  for (int i = 0; i < 4; i++)
-  {
-    if (digitalRead(FLOOR_BUTTON_PINS[i]) == LOW && (millis() - lastButtonPress[i] > DEBOUNCE_MS))
-    {
-      lastButtonPress[i] = millis();
-      if (floorAlert[i])
-      {
-        int sensorsOK = NUM_FLOOR_SENSORS - floorLowSensorCount[i];
-        if (sensorsOK >= SENSORS_OK_TO_RESET)
-        {
-          floorAlert[i] = false;
-          updateLEDs();
-          publishAck(i + 1);
-        }
-        else
-        {
-          Serial.print(">>> Floor ");
-          Serial.print(i + 1);
-          Serial.print(" reset ignored: only ");
-          Serial.print(sensorsOK);
-          Serial.print("/");
-          Serial.print(NUM_FLOOR_SENSORS);
-          Serial.println(" sensors OK. Restock more first.");
-        }
-      }
-    }
-  }
 
   handleBuzzer();
 }
