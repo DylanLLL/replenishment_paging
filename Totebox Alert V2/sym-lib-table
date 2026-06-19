@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Actuator_Board_Symbols")(type "KiCad")(uri "C:/Documents/School/ND/Clubs/IrishSat/power-boards/actuator-board/resources/Actuator_Board_Symbols.kicad_sym")(options "")(descr ""))
+)

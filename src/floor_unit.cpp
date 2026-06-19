@@ -5,15 +5,15 @@
 // ============ CONFIGURATION ============
 #define FLOOR_NUMBER 1  // 1, 2, 3, or 4 for each floor unit
 
-const char* WIFI_SSID = "Dylan";             // wifi ssid --- Incubus
-const char* WIFI_PASSWORD = "koenigsegg";    // wifi password --- bl1bl1iot
-const char* MQTT_BROKER = "10.239.190.222";  // PC IP --- 10.176.164.72
-const int MQTT_PORT = 1883;                  // 8883 for encrypted
+const char* WIFI_SSID = "Incubus";          // wifi ssid --- Incubus --- Dylan
+const char* WIFI_PASSWORD = "bl1bl1iot";    // wifi password --- bl1bl1iot --- koenigsegg
+const char* MQTT_BROKER = "10.176.164.72";  // PC IP --- 10.176.164.72
+const int MQTT_PORT = 1883;                 // 8883 for encrypted
 
 // Distance threshold in cm. If measured distance > this value,
 // the stack is considered too low (needs restocking).
 // Calibrate based on your tote box dimensions and sensor mounting.
-const int DISTANCE_THRESHOLD_CM = 50;
+const int DISTANCE_THRESHOLD_CM = 110;
 
 // Minimum number of sensors that must read within range to allow alert reset.
 // Also defines the raise threshold: alert fires when sensors OK drops below this value.

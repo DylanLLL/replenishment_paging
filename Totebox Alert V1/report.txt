@@ -1,0 +1,577 @@
+Info: Processing symbol '5V_SMPS1:Converter_ACDC:Converter_ACDC_Hi-Link_HLK-5Mxx'.
+Info: Processing symbol 'C1:Capacitor_THT:CP_Radial_D8.0mm_P3.50mm'.
+Info: Processing symbol 'J3:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'J2:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'J7:Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal'.
+Info: Processing symbol 'R1:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'C11:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'J6:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'C6:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'C4:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'R2:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'C8:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'C2:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'F1:Fuse:Fuseholder_Littelfuse_Nano2_154x'.
+Info: Processing symbol 'D1:Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal'.
+Info: Processing symbol 'BZ1:Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical'.
+Info: Processing symbol 'J1:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'C10:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'R4:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'C13:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'J4:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'J5:Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical'.
+Info: Processing symbol 'C5:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'C7:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'C3:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'R3:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'C12:Capacitor_THT:CP_Radial_D6.3mm_P2.50mm'.
+Info: Processing symbol 'C9:Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm'.
+Info: Processing symbol 'R5:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R6:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R7:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R8:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R9:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R10:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R11:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R12:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Total warnings: 11, errors: 1.
+Info: Processing symbol 'SW2:Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal'.
+Info: Processing symbol 'U1:RF_Module:ESP32-WROOM-32U'.
+Info: Processing symbol 'U2:Package_DIP:DIP-4_W7.62mm'.
+Info: Processing symbol 'U7:Package_SO:SOIC-8_3.9x4.9mm_P1.27mm'.
+Add net Net-(5V_SMPS1-VIN+).
+Connected 5V_SMPS1 pin 1 to Net-(5V_SMPS1-VIN+).
+Added BZ1 (footprint 'Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical').
+Changed REF** reference designator to BZ1.
+Changed BZ1 value from JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical to Buzzer.
+Updated BZ1 symbol association from  to /1191f3ab-0ae0-4c0e-abf9-692c486ec4b5.
+Updated BZ1 fields.
+Updated BZ1 sheetname to '/'.
+Updated BZ1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated BZ1 footprint filters to '*Buzzer*'.
+Add net GND.
+Connected BZ1 pin 2 to GND.
+Add net Net-(BZ1-+).
+Connected BZ1 pin 1 to Net-(BZ1-+).
+Added C1 (footprint 'Capacitor_THT:CP_Radial_D8.0mm_P3.50mm').
+Changed REF** reference designator to C1.
+Changed C1 value from CP_Radial_D8.0mm_P3.50mm to 470u.
+Updated C1 symbol association from  to /268b43ee-81b2-49a8-a673-2f22ffc7c471.
+Updated C1 fields.
+Updated C1 sheetname to '/'.
+Updated C1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C1 footprint filters to 'CP_*'.
+Connected C1 pin 2 to GND.
+Connected C1 pin 1 to 5V.
+Added C2 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C2.
+Changed C2 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C2 symbol association from  to /bd3509f3-20e2-4b1d-a2ca-821571cd1632.
+Updated C2 fields.
+Updated C2 sheetname to '/'.
+Updated C2 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C2 footprint filters to 'CP_*'.
+Connected C2 pin 2 to GND.
+Connected C2 pin 1 to 5V.
+Added C3 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C3.
+Changed C3 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C3 symbol association from  to /b456e332-b091-4156-ab56-26d7ce3a6a67.
+Updated C3 fields.
+Updated C3 sheetname to '/'.
+Updated C3 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C3 footprint filters to 'C_*'.
+Connected C3 pin 1 to 5V.
+Connected C3 pin 2 to GND.
+Added C4 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C4.
+Changed C4 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C4 symbol association from  to /d3e52e2d-fd72-4d63-b4a4-2cf1e6988076.
+Updated C4 fields.
+Updated C4 sheetname to '/'.
+Updated C4 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C4 footprint filters to 'CP_*'.
+Connected C4 pin 2 to GND.
+Connected C4 pin 1 to 5V.
+Added C5 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C5.
+Changed C5 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C5 symbol association from  to /b4cbf5c5-8632-4ecf-a592-5d0ff228ec01.
+Updated C5 fields.
+Updated C5 sheetname to '/'.
+Updated C5 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C5 footprint filters to 'C_*'.
+Connected C5 pin 2 to GND.
+Connected C5 pin 1 to 5V.
+Added C6 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C6.
+Changed C6 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C6 symbol association from  to /0624f3bf-cd2b-409e-8192-59a4601217cc.
+Updated C6 fields.
+Updated C6 sheetname to '/'.
+Updated C6 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C6 footprint filters to 'CP_*'.
+Connected C6 pin 1 to 5V.
+Connected C6 pin 2 to GND.
+Added C7 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C7.
+Changed C7 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C7 symbol association from  to /eab56710-389b-4ac9-bfca-b29b44c110a4.
+Updated C7 fields.
+Updated C7 sheetname to '/'.
+Updated C7 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C7 footprint filters to 'C_*'.
+Connected C7 pin 2 to GND.
+Connected C7 pin 1 to 5V.
+Added C8 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C8.
+Changed C8 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C8 symbol association from  to /125b04a2-9c44-418b-849d-35dbac5ba35d.
+Updated C8 fields.
+Updated C8 sheetname to '/'.
+Updated C8 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C8 footprint filters to 'CP_*'.
+Connected C8 pin 2 to GND.
+Connected C8 pin 1 to 5V.
+Added C9 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C9.
+Changed C9 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C9 symbol association from  to /b594dbcf-036c-4108-b9c2-66a0127ad246.
+Updated C9 fields.
+Updated C9 sheetname to '/'.
+Updated C9 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C9 footprint filters to 'C_*'.
+Connected C9 pin 1 to 5V.
+Connected C9 pin 2 to GND.
+Added C10 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C10.
+Changed C10 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C10 symbol association from  to /5430d63b-d76e-4057-aea1-e361bc57a991.
+Updated C10 fields.
+Updated C10 sheetname to '/'.
+Updated C10 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C10 footprint filters to 'CP_*'.
+Connected C10 pin 1 to 5V.
+Connected C10 pin 2 to GND.
+Added C11 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C11.
+Changed C11 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C11 symbol association from  to /2ee92e1b-68e9-4320-ae4f-5350fb8d16b7.
+Updated C11 fields.
+Updated C11 sheetname to '/'.
+Updated C11 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C11 footprint filters to 'C_*'.
+Connected C11 pin 2 to GND.
+Connected C11 pin 1 to 5V.
+Added C12 (footprint 'Capacitor_THT:CP_Radial_D6.3mm_P2.50mm').
+Changed REF** reference designator to C12.
+Changed C12 value from CP_Radial_D6.3mm_P2.50mm to 100u.
+Updated C12 symbol association from  to /f6e55e4b-1232-46cb-8ce0-5229cb00bcac.
+Updated C12 fields.
+Updated C12 sheetname to '/'.
+Updated C12 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C12 footprint filters to 'CP_*'.
+Connected C12 pin 2 to GND.
+Connected C12 pin 1 to 5V.
+Added C13 (footprint 'Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm').
+Changed REF** reference designator to C13.
+Changed C13 value from C_Disc_D5.0mm_W2.5mm_P2.50mm to 0.1u.
+Updated C13 symbol association from  to /c6b9e0d9-402e-4b2f-aadb-67565edfa642.
+Updated C13 fields.
+Updated C13 sheetname to '/'.
+Updated C13 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated C13 footprint filters to 'C_*'.
+Connected C13 pin 1 to 5V.
+Connected C13 pin 2 to GND.
+Added D1 (footprint 'Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal').
+Changed REF** reference designator to D1.
+Changed D1 value from PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal to LED.
+Updated D1 symbol association from  to /cbf3f798-2dae-44b1-83a8-6219d8d128ed.
+Updated D1 fields.
+Updated D1 sheetname to '/'.
+Updated D1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated D1 footprint filters to 'LED* LED_SMD:* LED_THT:*'.
+Connected D1 pin 1 to GND.
+Add net Net-(D1-A).
+Connected D1 pin 2 to Net-(D1-A).
+Added F1 (footprint 'Fuse:Fuseholder_Littelfuse_Nano2_154x').
+Changed REF** reference designator to F1.
+Changed F1 value from Fuseholder_Littelfuse_Nano2_154x to Fuse_Small.
+Updated F1 symbol association from  to /150e5b97-2bb4-4ac1-b466-00dd296d8016.
+Updated F1 fields.
+Updated F1 sheetname to '/'.
+Updated F1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated F1 footprint filters to '*Fuse*'.
+Add net Net-(J7-Line).
+Connected F1 pin 1 to Net-(J7-Line).
+Connected F1 pin 2 to Net-(5V_SMPS1-VIN+).
+Added J1 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J1.
+Changed J1 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J1 symbol association from  to /ad5fb351-5be6-46c9-a447-66c227c7a2c5.
+Updated J1 fields.
+Updated J1 sheetname to '/'.
+Updated J1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J1 footprint filters to 'Connector*:*_1x??_*'.
+Add net Net-(J1-Echo).
+Connected J1 pin 3 to Net-(J1-Echo).
+Connected J1 pin 1 to 5V.
+Connected J1 pin 4 to GND.
+Add net TRIG1.
+Connected J1 pin 2 to TRIG1.
+Added J2 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J2.
+Changed J2 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J2 symbol association from  to /9551bd12-e40e-45d9-baf0-818594c6e0af.
+Updated J2 fields.
+Updated J2 sheetname to '/'.
+Updated J2 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J2 footprint filters to 'Connector*:*_1x??_*'.
+Connected J2 pin 1 to 5V.
+Connected J2 pin 4 to GND.
+Add net TRIG2.
+Connected J2 pin 2 to TRIG2.
+Add net Net-(J2-Echo).
+Connected J2 pin 3 to Net-(J2-Echo).
+Added J3 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J3.
+Changed J3 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J3 symbol association from  to /1438d49f-496e-4c4c-a49b-1435bcf106e6.
+Updated J3 fields.
+Updated J3 sheetname to '/'.
+Updated J3 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J3 footprint filters to 'Connector*:*_1x??_*'.
+Connected J3 pin 1 to 5V.
+Add net Net-(J3-Echo).
+Connected J3 pin 3 to Net-(J3-Echo).
+Connected J3 pin 4 to GND.
+Add net TRIG3.
+Connected J3 pin 2 to TRIG3.
+Added J4 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J4.
+Changed J4 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J4 symbol association from  to /6050f6d2-9840-4faa-8c98-03ea72a64ff0.
+Updated J4 fields.
+Updated J4 sheetname to '/'.
+Updated J4 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J4 footprint filters to 'Connector*:*_1x??_*'.
+Connected J4 pin 1 to 5V.
+Connected J4 pin 4 to GND.
+Add net TRIG4.
+Connected J4 pin 2 to TRIG4.
+Add net Net-(J4-Echo).
+Connected J4 pin 3 to Net-(J4-Echo).
+Added J5 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J5.
+Changed J5 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J5 symbol association from  to /12e0a631-ff2d-44fd-b068-c366ce8ae53e.
+Updated J5 fields.
+Updated J5 sheetname to '/'.
+Updated J5 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J5 footprint filters to 'Connector*:*_1x??_*'.
+Add net TRIG5.
+Connected J5 pin 2 to TRIG5.
+Connected J5 pin 4 to GND.
+Add net Net-(J5-Echo).
+Connected J5 pin 3 to Net-(J5-Echo).
+Connected J5 pin 1 to 5V.
+Added J6 (footprint 'Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical').
+Changed REF** reference designator to J6.
+Changed J6 value from JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical to HY-SRF05.
+Updated J6 symbol association from  to /fe36eaf9-87ab-4918-82a5-c6d6ddac12d7.
+Updated J6 fields.
+Updated J6 sheetname to '/'.
+Updated J6 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J6 footprint filters to 'Connector*:*_1x??_*'.
+Add net Net-(J6-Echo).
+Connected J6 pin 3 to Net-(J6-Echo).
+Add net ECHO3.
+Connected J6 pin 4 to GND.
+Connected J6 pin 1 to 5V.
+Add net TRIG6.
+Connected J6 pin 2 to TRIG6.
+Added J7 (footprint 'Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal').
+Changed REF** reference designator to J7.
+Changed J7 value from PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal to Conn_01x02.
+Updated J7 symbol association from  to /ddafad89-0a49-46ad-818e-c85682802d86.
+Updated J7 fields.
+Updated J7 sheetname to '/'.
+Updated J7 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated J7 footprint filters to 'Connector*:*_1x??_*'.
+Connected J7 pin 2 to Net-(5V_SMPS1-VIN-).
+Connected J7 pin 1 to Net-(J7-Line).
+Added R1 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R1.
+Changed R1 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R1 symbol association from  to /21ab34f8-48b4-493d-9926-af20d0e8e2ba.
+Updated R1 fields.
+Updated R1 sheetname to '/'.
+Updated R1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R1 footprint filters to 'R_*'.
+Add net ECHO1.
+Connected R1 pin 1 to ECHO1.
+Connected R1 pin 2 to Net-(J1-Echo).
+Added R2 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R2.
+Changed R2 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R2 symbol association from  to /bf2c4158-d90a-48da-8cb2-452bcceaaaa6.
+Updated R2 fields.
+Updated R2 sheetname to '/'.
+Updated R2 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R2 footprint filters to 'R_*'.
+Connected R2 pin 1 to GND.
+Connected R2 pin 2 to Net-(J1-Echo).
+Added R3 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R3.
+Changed R3 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R3 symbol association from  to /13b265c0-aa66-4445-b02d-62934b62c09e.
+Updated R3 fields.
+Updated R3 sheetname to '/'.
+Updated R3 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R3 footprint filters to 'R_*'.
+Connected R3 pin 2 to Net-(J2-Echo).
+Add net ECHO2.
+Connected R3 pin 1 to ECHO2.
+Added R4 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R4.
+Changed R4 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R4 symbol association from  to /58658f60-a9f9-45bc-8d37-2cfbac5556b0.
+Updated R4 fields.
+Updated R4 sheetname to '/'.
+Updated R4 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R4 footprint filters to 'R_*'.
+Connected R4 pin 1 to GND.
+Connected R4 pin 2 to Net-(J2-Echo).
+Added R5 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R5.
+Changed R5 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R5 symbol association from  to /8903666a-d56b-4a54-89a8-9429ae1b45a1.
+Updated R5 fields.
+Updated R5 sheetname to '/'.
+Updated R5 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R5 footprint filters to 'R_*'.
+Connected R5 pin 1 to ECHO3.
+Connected R5 pin 2 to Net-(J3-Echo).
+Added 5V_SMPS1 (footprint 'Converter_ACDC:Converter_ACDC_Hi-Link_HLK-5Mxx').
+Added R6 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R6.
+Changed R6 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R6 symbol association from  to /8330d297-0610-4997-afdd-364844a0787d.
+Updated R6 fields.
+Updated R6 sheetname to '/'.
+Updated R6 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R6 footprint filters to 'R_*'.
+Connected R6 pin 1 to GND.
+Connected R6 pin 2 to Net-(J3-Echo).
+Changed REF** reference designator to 5V_SMPS1.
+Added R7 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R7.
+Changed R7 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R7 symbol association from  to /f1451426-83c6-4464-9998-1cbd8c2f8040.
+Updated R7 fields.
+Updated R7 sheetname to '/'.
+Updated R7 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R7 footprint filters to 'R_*'.
+Add net ECHO4.
+Connected R7 pin 1 to ECHO4.
+Connected R7 pin 2 to Net-(J4-Echo).
+Changed 5V_SMPS1 value from Converter_ACDC_Hi-Link_HLK-5Mxx to ~.
+Added R8 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R8.
+Changed R8 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R8 symbol association from  to /b4d5a6a0-f5e3-4bf0-a96a-29b8287e7fa2.
+Updated R8 fields.
+Updated R8 sheetname to '/'.
+Updated R8 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R8 footprint filters to 'R_*'.
+Connected R8 pin 1 to GND.
+Connected R8 pin 2 to Net-(J4-Echo).
+Updated 5V_SMPS1 symbol association from  to /71629b5b-2424-4b72-8981-b1860ee61de0.
+Added R9 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R9.
+Changed R9 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R9 symbol association from  to /319b1ee4-e896-4ffb-b749-f8a70797bb85.
+Updated R9 fields.
+Updated R9 sheetname to '/'.
+Updated R9 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R9 footprint filters to 'R_*'.
+Connected R9 pin 2 to Net-(J5-Echo).
+Add net ECHO5.
+Connected R9 pin 1 to ECHO5.
+Updated 5V_SMPS1 sheetname to '/'.
+Added R10 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R10.
+Changed R10 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R10 symbol association from  to /73a96ce8-9d35-42c5-8748-8b9d06ba97d1.
+Updated R10 fields.
+Updated R10 sheetname to '/'.
+Updated R10 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R10 footprint filters to 'R_*'.
+Connected R10 pin 1 to GND.
+Connected R10 pin 2 to Net-(J5-Echo).
+Updated 5V_SMPS1 sheetfile to 'Totebox Alert.kicad_sch'.
+Added R11 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Changed REF** reference designator to R11.
+Changed R11 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 1k.
+Updated R11 symbol association from  to /0ccb7e52-3698-402c-97d4-b9c560185246.
+Updated R11 fields.
+Updated R11 sheetname to '/'.
+Updated R11 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R11 footprint filters to 'R_*'.
+Connected R11 pin 2 to Net-(J6-Echo).
+Add net ECHO6.
+Connected R11 pin 1 to ECHO6.
+Add net Net-(5V_SMPS1-VOUT-).
+Connected 5V_SMPS1 pin 4 to Net-(5V_SMPS1-VOUT-).
+Changed REF** reference designator to R12.
+Changed R12 value from R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal to 2k.
+Updated R12 symbol association from  to /3a8950d2-150a-4584-838f-8d339205f069.
+Updated R12 fields.
+Updated R12 sheetname to '/'.
+Updated R12 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated R12 footprint filters to 'R_*'.
+Connected R12 pin 2 to Net-(J6-Echo).
+Connected R12 pin 1 to GND.
+Add net 5V.
+Added SW2 (footprint 'Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal').
+Changed REF** reference designator to SW2.
+Changed SW2 value from PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal to SW_SPDT.
+Updated SW2 symbol association from  to /fec170a4-25e1-4506-bc9f-b9dc4fb3ba53.
+Updated SW2 fields.
+Updated SW2 sheetname to '/'.
+Updated SW2 sheetfile to 'Totebox Alert.kicad_sch'.
+Connected SW2 pin 2 to GND.
+Add net unconnected-(SW2-A-Pad1).
+Connected SW2 pin 1 to unconnected-(SW2-A-Pad1).
+Connected 5V_SMPS1 pin 3 to 5V.
+Added U1 (footprint 'RF_Module:ESP32-WROOM-32U').
+Changed REF** reference designator to U1.
+Updated U1 symbol association from  to /bb0dbd3b-cfc8-4074-bbf0-9622a978db96.
+Updated U1 fields.
+Updated U1 sheetname to '/'.
+Updated U1 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated U1 footprint filters to 'ESP32?WROOM?32U*'.
+Connected U1 pin 39 to GND.
+Connected U1 pin 10 to ECHO5.
+Connected U1 pin 39 to GND.
+Add net unconnected-(U1-SWP/SD3-Pad18).
+Connected U1 pin 18 to unconnected-(U1-SWP/SD3-Pad18).
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Add net unconnected-(U1-IO2-Pad24).
+Connected U1 pin 24 to unconnected-(U1-IO2-Pad24).
+Add net unconnected-(U1-SHD/SD2-Pad17).
+Connected U1 pin 17 to unconnected-(U1-SHD/SD2-Pad17).
+Connected U1 pin 39 to GND.
+Connected U1 pin 29 to ECHO2.
+Connected U1 pin 39 to GND.
+Connected U1 pin 31 to ECHO3.
+Add net unconnected-(U1-SENSOR_VN-Pad5).
+Connected U1 pin 5 to unconnected-(U1-SENSOR_VN-Pad5).
+Add net unconnected-(U1-IO15-Pad23).
+Connected U1 pin 23 to unconnected-(U1-IO15-Pad23).
+Add net unconnected-(U1-RXD0/IO3-Pad34).
+Connected U1 pin 34 to unconnected-(U1-RXD0/IO3-Pad34).
+Connected U1 pin 39 to GND.
+Add net unconnected-(U1-SENSOR_VP-Pad4).
+Connected U1 pin 4 to unconnected-(U1-SENSOR_VP-Pad4).
+Add net unconnected-(U1-TXD0/IO1-Pad35).
+Connected U1 pin 35 to unconnected-(U1-TXD0/IO1-Pad35).
+Add net unconnected-(U1-IO12-Pad14).
+Connected U1 pin 14 to unconnected-(U1-IO12-Pad14).
+Connected U1 pin 39 to GND.
+Connected U1 pin 37 to ECHO4.
+Add net unconnected-(U1-IO34-Pad6).
+Connected U1 pin 6 to unconnected-(U1-IO34-Pad6).
+Connected U1 pin 2 to 5V.
+Add net unconnected-(U1-IO0-Pad25).
+Connected U1 pin 25 to unconnected-(U1-IO0-Pad25).
+Connected U1 pin 39 to GND.
+Connected U1 pin 15 to GND.
+Connected U1 pin 1 to GND.
+Add net unconnected-(U1-IO35-Pad7).
+Connected U1 pin 7 to unconnected-(U1-IO35-Pad7).
+Add net unconnected-(U1-SDO/SD0-Pad21).
+Connected U1 pin 21 to unconnected-(U1-SDO/SD0-Pad21).
+Added R12 (footprint 'Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal').
+Add net unconnected-(U1-IO21-Pad33).
+Connected U1 pin 33 to unconnected-(U1-IO21-Pad33).
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Connected U1 pin 38 to GND.
+Add net unconnected-(U1-SCK/CLK-Pad20).
+Connected U1 pin 20 to unconnected-(U1-SCK/CLK-Pad20).
+Connected U1 pin 27 to ECHO1.
+Connected U1 pin 28 to TRIG2.
+Add net unconnected-(U1-EN-Pad3).
+Connected U1 pin 3 to unconnected-(U1-EN-Pad3).
+Connected U1 pin 30 to TRIG3.
+Connected U1 pin 39 to GND.
+Add net unconnected-(U1-SCS/CMD-Pad19).
+Connected U1 pin 19 to unconnected-(U1-SCS/CMD-Pad19).
+Add net unconnected-(U1-NC-Pad32).
+Connected U1 pin 32 to unconnected-(U1-NC-Pad32).
+Connected U1 pin 9 to TRIG5.
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Add net unconnected-(U1-SDI/SD1-Pad22).
+Connected U1 pin 22 to unconnected-(U1-SDI/SD1-Pad22).
+Connected U1 pin 39 to GND.
+Connected U1 pin 12 to ECHO6.
+Connected U1 pin 13 to Net-(BZ1-+).
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Add net OPTO_IN1.
+Connected U1 pin 16 to OPTO_IN1.
+Connected U1 pin 36 to TRIG4.
+Connected U1 pin 11 to TRIG6.
+Connected U1 pin 39 to GND.
+Add net NO.
+Connected U1 pin 8 to NO.
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Connected U1 pin 39 to GND.
+Add net Net-(5V_SMPS1-VIN-).
+Added U2 (footprint 'Package_DIP:DIP-4_W7.62mm').
+Changed REF** reference designator to U2.
+Changed U2 value from DIP-4_W7.62mm to Optocoupler_DC_PhotoNPN_AKEC.
+Updated U2 symbol association from  to /848b7bca-aadb-4bf7-97d7-200d7533570d.
+Updated U2 fields.
+Updated U2 sheetname to '/'.
+Updated U2 sheetfile to 'Totebox Alert.kicad_sch'.
+Updated U2 footprint filters to 'DIP*W7.62mm*'.
+Connected U2 pin 4 to Net-(D1-A).
+Add net 12V.
+Connected U2 pin 3 to 12V.
+Connected U2 pin 2 to GND.
+Connected U2 pin 1 to OPTO_IN1.
+Connected 5V_SMPS1 pin 2 to Net-(5V_SMPS1-VIN-).
+Added U7 (footprint 'Package_SO:SOIC-8_3.9x4.9mm_P1.27mm').
+Changed REF** reference designator to U7.
+Changed U7 value from SOIC-8_3.9x4.9mm_P1.27mm to XL6009.
+Updated U7 symbol association from  to /98fdd277-5235-4b2e-b2ba-0da885022c08.
+Updated U7 sheetname to '/'.
+Updated U7 sheetfile to 'Totebox Alert.kicad_sch'.
+Connected U7 pin 2 to Net-(5V_SMPS1-VOUT-).
+Connected U7 pin 4 to Net-(5V_SMPS1-VOUT-).
+Connected U7 pin 3 to 12V.
+Connected U7 pin 1 to 5V.
+
+
+Connected U1 pin 26 to TRIG1.
+Warning: No net found for component J3 pad 5 (no pin 5 in symbol).
+Warning: No net found for component J4 pad 5 (no pin 5 in symbol).
+Warning: No net found for component J1 pad 5 (no pin 5 in symbol).
+Warning: No net found for component U7 pad 7 (no pin 7 in symbol).
+Warning: No net found for component BZ1 pad 3 (no pin 3 in symbol).
+Warning: No net found for component U7 pad 5 (no pin 5 in symbol).
+Warning: No net found for component U7 pad 8 (no pin 8 in symbol).
+Warning: No net found for component U7 pad 6 (no pin 6 in symbol).
+Warning: No net found for component J2 pad 5 (no pin 5 in symbol).
+Warning: No net found for component J5 pad 5 (no pin 5 in symbol).
+Warning: No net found for component J6 pad 5 (no pin 5 in symbol).
+Error: SW2 pad 3 not found in Connector_Phoenix_MC:PhoenixContact_MC_1,5_2-G-3.5_1x02_P3.50mm_Horizontal.
+
+
+Info: Total warnings: 11, errors: 1.
