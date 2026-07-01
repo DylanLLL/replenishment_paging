@@ -47,6 +47,9 @@ unsigned long lastSensorRead = 0;
 unsigned long lastButtonPress = 0;
 const unsigned long DEBOUNCE_MS = 200;
 
+// To reset the ESP32
+const unsigned long RESET_INTERVAL = 2UL * 60 * 60 * 1000;  // 2 hours in ms
+
 // ============ FUNCTIONS ============
 
 void blinkLEDs()
@@ -190,6 +193,12 @@ void setup()
 
 void loop()
 {
+  if (millis() > RESET_INTERVAL)
+  {
+    Serial.println("Reset ESP");
+    ESP.restart();
+  }
+
   if (!mqttClient.connected())
     connectMQTT();
   mqttClient.loop();

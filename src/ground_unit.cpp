@@ -32,6 +32,9 @@ unsigned long lastBuzzerToggle = 0;
 bool buzzerState = false;
 const unsigned long BUZZER_PERIOD_MS = 500;
 
+// To reset the ESP32
+const unsigned long RESET_INTERVAL = 2UL * 60 * 60 * 1000;  // 2 hours in ms
+
 // ============ FUNCTIONS ============
 
 void blinkLEDs()
@@ -172,6 +175,12 @@ void setup()
 
 void loop()
 {
+  if (millis() > RESET_INTERVAL)
+  {
+    Serial.println("Reset ESP");
+    ESP.restart();
+  }
+
   if (!mqttClient.connected())
     connectMQTT();
   mqttClient.loop();
