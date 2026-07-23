@@ -3,7 +3,8 @@
 #include <PubSubClient.h>
 
 // ============ CONFIGURATION ============
-#define FLOOR_NUMBER 1  // 1, 2, 3, or 4 for each floor unit
+#define FLOOR_NUMBER 1   // 1, 2, 3, or 4 for each floor unit
+#define FLOOR_AREA "A"   // "A" or "B" - which shelf area this unit covers on the floor
 
 const char* WIFI_SSID = "Incubus";          // wifi ssid --- Incubus --- Dylan
 const char* WIFI_PASSWORD = "bl1bl1iot";    // wifi password --- bl1bl1iot --- koenigsegg
@@ -32,9 +33,9 @@ const int LED_PIN = 13;
 const int BUZZER_PIN = 14;
 
 // ============ MQTT TOPICS ============
-char topicAlert[40];    // "warehouse/floor/X/alert"    (published)
-char topicStatus[40];   // "warehouse/floor/X/status"   (published, optional)
-char topicSensors[40];  // "warehouse/floor/X/sensors"  (published, low sensor count)
+char topicAlert[40];    // "warehouse/floor/X/A/alert"    (published)
+char topicStatus[40];   // "warehouse/floor/X/A/status"   (published, optional)
+char topicSensors[40];  // "warehouse/floor/X/A/sensors"  (published, low sensor count)
 
 // ============ STATE ============
 WiFiClient espClient;
@@ -130,7 +131,7 @@ void connectMQTT()
 {
   while (!mqttClient.connected())
   {
-    String clientId = "floor" + String(FLOOR_NUMBER) + "-" + String(random(0xffff), HEX);
+    String clientId = "floor" + String(FLOOR_NUMBER) + FLOOR_AREA + "-" + String(random(0xffff), HEX);
     Serial.print("Connecting to MQTT as ");
     Serial.print(clientId);
     Serial.print("...");
@@ -167,9 +168,9 @@ void setup()
   delay(100);
 
   // Build topics
-  snprintf(topicAlert, sizeof(topicAlert), "warehouse/floor/%d/alert", FLOOR_NUMBER);
-  snprintf(topicStatus, sizeof(topicStatus), "warehouse/floor/%d/status", FLOOR_NUMBER);
-  snprintf(topicSensors, sizeof(topicSensors), "warehouse/floor/%d/sensors", FLOOR_NUMBER);
+  snprintf(topicAlert, sizeof(topicAlert), "warehouse/floor/%d/%s/alert", FLOOR_NUMBER, FLOOR_AREA);
+  snprintf(topicStatus, sizeof(topicStatus), "warehouse/floor/%d/%s/status", FLOOR_NUMBER, FLOOR_AREA);
+  snprintf(topicSensors, sizeof(topicSensors), "warehouse/floor/%d/%s/sensors", FLOOR_NUMBER, FLOOR_AREA);
 
   // Pin setup
   for (int i = 0; i < NUM_SENSORS; i++)
