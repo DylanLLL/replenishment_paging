@@ -1,36 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-
-// ============ CONFIGURATION ============
-#define FLOOR_NUMBER 1   // 1, 2, 3, or 4 for each floor unit
-#define FLOOR_AREA "A"   // "A" or "B" - which shelf area this unit covers on the floor
-
-const char* WIFI_SSID = "Incubus";          // wifi ssid --- Incubus --- Dylan
-const char* WIFI_PASSWORD = "bl1bl1iot";    // wifi password --- bl1bl1iot --- koenigsegg
-const char* MQTT_BROKER = "10.176.164.72";  // PC IP --- 10.176.164.72
-const int MQTT_PORT = 1883;                 // 8883 for encrypted
-
-// Distance threshold in cm. If measured distance > this value,
-// the stack is considered too low (needs restocking).
-// Calibrate based on your tote box dimensions and sensor mounting.
-const int DISTANCE_THRESHOLD_CM = 110;
-
-// Minimum number of sensors that must read within range to allow alert reset.
-// Also defines the raise threshold: alert fires when sensors OK drops below this value.
-const int SENSORS_OK_TO_RESET = 4;
-
-// How often to read sensors (ms)
-const unsigned long SENSOR_INTERVAL_MS = 2000;
-
-// ============ PINS ============
-// Ultrasonic sensors: {trig, echo}
-const int NUM_SENSORS = 6;
-const int SENSOR_PINS[NUM_SENSORS][2] = { { 4, 16 }, { 17, 5 }, { 18, 19 }, { 22, 23 }, { 33, 25 }, { 26, 27 } };
-
-const int BUTTON_PIN = 32;
-const int LED_PIN = 13;
-const int BUZZER_PIN = 14;
+#include "config.h"
 
 // ============ MQTT TOPICS ============
 char topicAlert[40];    // "warehouse/floor/X/A/alert"    (published)
@@ -41,17 +12,28 @@ char topicSensors[40];  // "warehouse/floor/X/A/sensors"  (published, low sensor
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 
-bool alertActive = false;  // True when alert is currently published
-bool stockLow = false;     // True when any sensor detects low stock
-int lowSensorCount = 0;    // Number of sensors currently reading low stock
-unsigned long lastSensorRead = 0;
-unsigned long lastButtonPress = 0;
-const unsigned long DEBOUNCE_MS = 200;
+// ============ BUZZER ============
+// This unit plays exactly one pattern - its own, ALERT_INDEX - using the same
+// note bank and sequencer as the ground unit, so the two sound the same.
+AlertBuzzer buzzer;
 
-// To reset the ESP32
-const unsigned long RESET_INTERVAL = 2UL * 60 * 60 * 1000;  // 2 hours in ms
+uint8_t alertMask()
+{
+  return alertActive ? (uint8_t)(1 << ALERT_INDEX) : 0;
+}
 
-// ============ FUNCTIONS ============
+// delay() replacement that keeps the melody running. A plain delay() freezes
+// the sequencer, which stretches whatever note is playing and makes the pattern
+// come out different from the ground unit's.
+void buzzerDelay(unsigned long ms)
+{
+  unsigned long start = millis();
+  while (millis() - start < ms)
+  {
+    buzzer.update(alertMask());
+    yield();
+  }
+}
 
 void blinkLEDs()
 {
@@ -102,7 +84,7 @@ int countLowSensors()
       if (dist > DISTANCE_THRESHOLD_CM)
         lowCount++;
     }
-    delay(50);  // Always wait between sensors to prevent crosstalk
+    buzzerDelay(50);  // Always wait between sensors to prevent crosstalk
   }
   return lowCount;
 }
@@ -110,7 +92,35 @@ int countLowSensors()
 void setLocalAlert(bool on)
 {
   digitalWrite(LED_PIN, on ? HIGH : LOW);
-  digitalWrite(BUZZER_PIN, on ? HIGH : LOW);
+  // The buzzer is not switched here - it follows alertMask() through the
+  // sequencer in loop(), which plays this floor's pattern rather than a
+  // steady tone (a passive buzzer makes no sound from a plain HIGH anyway).
+}
+
+void IRAM_ATTR onButtonPress()
+{
+  buttonPressed = true;
+}
+
+// We subscribe to our own retained alert topic. If this unit rebooted (the 2 h
+// auto-restart, or a power blip) while an alert was still unacknowledged, the
+// broker still holds ALERT and the ground unit is still lit - but alertActive
+// would come back false, so the button would refuse to clear it. Restoring the
+// flag here keeps the button able to acknowledge across a restart.
+void mqttCallback(char* topic, byte* payload, unsigned int length)
+{
+  String msg;
+  for (unsigned int i = 0; i < length; i++)
+    msg += (char)payload[i];
+
+  bool active = (msg == "ALERT");
+  if (active == alertActive)
+    return;  // our own publish echoing back, nothing to do
+
+  alertActive = active;
+  setLocalAlert(active);
+  Serial.print(">>> Alert state restored from broker: ");
+  Serial.println(msg);
 }
 
 void connectWiFi()
@@ -127,6 +137,16 @@ void connectWiFi()
   Serial.println(WiFi.localIP());
 }
 
+void publishAlert(bool active)
+{
+  const char* payload = active ? "ALERT" : "CLEAR";
+  mqttClient.publish(topicAlert, payload, true);  // retained
+  Serial.print("Published to ");
+  Serial.print(topicAlert);
+  Serial.print(": ");
+  Serial.println(payload);
+}
+
 void connectMQTT()
 {
   while (!mqttClient.connected())
@@ -139,25 +159,25 @@ void connectMQTT()
     {
       Serial.println(" connected.");
       mqttClient.publish(topicStatus, "online", true);
+      mqttClient.subscribe(topicAlert);  // recover alert state across a restart
+
+      // Re-assert an alert we are already holding. The broker may have lost its
+      // retained store (restarted without persistence, or crashed between
+      // autosaves), and publishAlert() only fires on a state change - so
+      // without this the ground unit would go dark while we are still alarming.
+      // At boot alertActive is false, so this never overwrites a retained ALERT
+      // before the subscription above has had a chance to restore it.
+      if (alertActive)
+        publishAlert(true);
     }
     else
     {
       Serial.print(" failed, rc=");
       Serial.print(mqttClient.state());
       Serial.println(". Retrying in 3s.");
-      delay(3000);
+      buzzerDelay(3000);  // keep alarming locally while the broker is unreachable
     }
   }
-}
-
-void publishAlert(bool active)
-{
-  const char* payload = active ? "ALERT" : "CLEAR";
-  mqttClient.publish(topicAlert, payload, true);  // retained
-  Serial.print("Published to ");
-  Serial.print(topicAlert);
-  Serial.print(": ");
-  Serial.println(payload);
 }
 
 // ============ SETUP & LOOP ============
@@ -179,12 +199,14 @@ void setup()
     pinMode(SENSOR_PINS[i][1], INPUT);   // echo
   }
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), onButtonPress, FALLING);
   pinMode(LED_PIN, OUTPUT);
-  pinMode(BUZZER_PIN, OUTPUT);
+  buzzer.begin(BUZZER_PIN);
   setLocalAlert(false);
 
   connectWiFi();
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
+  mqttClient.setCallback(mqttCallback);
   connectMQTT();
 
   Serial.print("Floor ");
@@ -203,6 +225,8 @@ void loop()
   if (!mqttClient.connected())
     connectMQTT();
   mqttClient.loop();
+
+  buzzer.update(alertMask());
 
   // --- Periodic sensor reading ---
   if (millis() - lastSensorRead >= SENSOR_INTERVAL_MS)
@@ -229,28 +253,32 @@ void loop()
   // --- Button handling (reset alert) ---
   // Only allow reset when stock has actually been replenished.
   // Re-reads sensors fresh so the decision is never based on stale data.
-  if (digitalRead(BUTTON_PIN) == LOW && (millis() - lastButtonPress > DEBOUNCE_MS))
+  if (buttonPressed)
   {
-    lastButtonPress = millis();
-    if (alertActive)
+    buttonPressed = false;
+    if (millis() - lastButtonPress > DEBOUNCE_MS)
     {
-      int freshLowCount = countLowSensors();
-      if ((NUM_SENSORS - freshLowCount) >= SENSORS_OK_TO_RESET)
+      lastButtonPress = millis();
+      if (alertActive)
       {
-        lowSensorCount = freshLowCount;
-        stockLow = ((NUM_SENSORS - lowSensorCount) < SENSORS_OK_TO_RESET);
-        alertActive = false;
-        setLocalAlert(false);
-        publishAlert(false);
-        Serial.println(">>> Alert cleared by button");
-      }
-      else
-      {
-        Serial.print(">>> Reset ignored: only ");
-        Serial.print(NUM_SENSORS - freshLowCount);
-        Serial.print("/");
-        Serial.print(NUM_SENSORS);
-        Serial.println(" sensors OK. Please restock more.");
+        int freshLowCount = countLowSensors();
+        if ((NUM_SENSORS - freshLowCount) >= SENSORS_OK_TO_RESET)
+        {
+          lowSensorCount = freshLowCount;
+          stockLow = ((NUM_SENSORS - lowSensorCount) < SENSORS_OK_TO_RESET);
+          alertActive = false;
+          setLocalAlert(false);
+          publishAlert(false);
+          Serial.println(">>> Alert cleared by button");
+        }
+        else
+        {
+          Serial.print(">>> Reset ignored: only ");
+          Serial.print(NUM_SENSORS - freshLowCount);
+          Serial.print("/");
+          Serial.print(NUM_SENSORS);
+          Serial.println(" sensors OK. Please restock more.");
+        }
       }
     }
   }

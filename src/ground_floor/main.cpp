@@ -24,83 +24,16 @@ void updateLEDs()
     digitalWrite(FLOOR_LED_PINS[i], floor_Alert[i] ? HIGH : LOW);
 }
 
-bool anyAlertActive()
+AlertBuzzer buzzer;
+
+// Bit i set = floor/area i is alerting. Drives the shared melody sequencer.
+uint8_t alertMask()
 {
+  uint8_t mask = 0;
   for (int i = 0; i < 8; i++)
     if (floor_Alert[i])
-      return true;
-  return false;
-}
-
-int currentAlertFloor = -1;  // index into alerts[]/floor_Alert[] currently sounding, -1 = silent
-size_t currentNoteIndex = 0;
-unsigned long noteStartTime = 0;
-bool noteStarted = false;
-
-// Finds the next floor (after afterIdx, wrapping) whose alert is active.
-int nextActiveFloor(int afterIdx)
-{
-  for (int step = 1; step <= 8; step++)
-  {
-    int idx = (afterIdx + step + 8) % 8;
-    if (floor_Alert[idx])
-      return idx;
-  }
-  return -1;
-}
-
-void playNote(const Note& note)
-{
-  if (note.freq == SILENT)
-    noTone(BUZZER_PIN);
-  else
-    tone(BUZZER_PIN, note.freq);
-}
-
-void stopBuzzer()
-{
-  noTone(BUZZER_PIN);
-  currentAlertFloor = -1;
-  currentNoteIndex = 0;
-  noteStarted = false;
-}
-
-void handleBuzzer()
-{
-  if (!anyAlertActive())
-  {
-    if (currentAlertFloor != -1)
-      stopBuzzer();
-    return;
-  }
-
-  if (currentAlertFloor == -1 || !floor_Alert[currentAlertFloor])
-  {
-    currentAlertFloor = nextActiveFloor(currentAlertFloor);
-    currentNoteIndex = 0;
-    noteStarted = false;
-  }
-
-  const Alert& alert = alerts[currentAlertFloor];
-
-  if (!noteStarted)
-  {
-    playNote(alert.melody[currentNoteIndex]);
-    noteStartTime = millis();
-    noteStarted = true;
-    return;
-  }
-
-  if (millis() - noteStartTime >= alert.melody[currentNoteIndex].duration)
-  {
-    currentNoteIndex++;
-    if (currentNoteIndex >= alert.length)
-    {
-      currentAlertFloor = nextActiveFloor(currentAlertFloor);
-      currentNoteIndex = 0;
-    }
-    noteStarted = false;
-  }
+      mask |= (1 << i);
+  return mask;
 }
 
 void mqttCallback(char* topic, byte* payload, unsigned int length)
@@ -186,8 +119,7 @@ void setup()
     pinMode(FLOOR_LED_PINS[i], OUTPUT);
     digitalWrite(FLOOR_LED_PINS[i], LOW);
   }
-  pinMode(BUZZER_PIN, OUTPUT);
-  digitalWrite(BUZZER_PIN, LOW);
+  buzzer.begin(BUZZER_PIN);
 
   connectWiFi();
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
@@ -209,5 +141,5 @@ void loop()
     connectMQTT();
   mqttClient.loop();
 
-  handleBuzzer();
+  buzzer.update(alertMask());
 }
