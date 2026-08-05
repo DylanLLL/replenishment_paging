@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Actuator_Board_Footprints")(type "KiCad")(uri "C:/Documents/School/ND/Clubs/IrishSat/power-boards/actuator-board/resources/Actuator_Board_Footprints.pretty")(options "")(descr ""))
+)
