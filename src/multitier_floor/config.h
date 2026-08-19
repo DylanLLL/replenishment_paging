@@ -58,3 +58,16 @@ volatile bool buttonPressed = false;
 
 // To reset the ESP32
 const unsigned long RESET_INTERVAL = 2UL * 60 * 60 * 1000;  // 2 hours in ms
+
+// ============ CONNECTIVITY RECOVERY ============
+// Reconnects are attempted from loop() without blocking, so an outage does not
+// freeze the buzzer mid-note or stop the button being able to clear an alert.
+const unsigned long WIFI_BOOT_TIMEOUT_MS = 20000;  // give up waiting in setup(), keep trying in loop()
+const unsigned long WIFI_RETRY_MS = 10000;         // re-arm WiFi when the core has given up on it
+const unsigned long MQTT_RETRY_MIN_MS = 3000;      // first gap between MQTT attempts
+const unsigned long MQTT_RETRY_MAX_MS = 30000;     // gap backs off to this while the broker is down
+
+// Last-resort recovery: restart if nothing has worked for this long. Generous
+// on purpose - restarting during a router reboot would only lose the alert we
+// are currently sounding and land us back in the same wait.
+const unsigned long OFFLINE_RESTART_MS = 5UL * 60 * 1000;  // 5 minutes

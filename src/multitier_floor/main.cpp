@@ -123,18 +123,36 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
   Serial.println(msg);
 }
 
+// ============ CONNECTIVITY ============
+unsigned long lastWiFiAttempt = 0;
+unsigned long lastMqttAttempt = 0;
+unsigned long mqttRetryGap = MQTT_RETRY_MIN_MS;
+unsigned long wifiDownSince = 0;  // millis() when WiFi dropped; 0 = up
+
 void connectWiFi()
 {
   Serial.print("Connecting to WiFi");
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
+
+  // Bounded wait. If the AP is not up yet we carry on into loop() and keep
+  // retrying there, rather than hanging in setup() forever with the sensors
+  // unread and the button unable to clear anything.
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_BOOT_TIMEOUT_MS)
   {
     blinkLEDs();
     Serial.print(".");
   }
-  Serial.print(" Connected. IP: ");
-  Serial.println(WiFi.localIP());
+  lastWiFiAttempt = millis();
+
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.print(" Connected. IP: ");
+    Serial.println(WiFi.localIP());
+  }
+  else
+    Serial.println(" not up yet - will keep retrying in the background.");
 }
 
 void publishAlert(bool active)
@@ -147,36 +165,81 @@ void publishAlert(bool active)
   Serial.println(payload);
 }
 
-void connectMQTT()
+// One MQTT attempt. Blocks only for the socket timeout, capped to 1 s in
+// setup() via espClient.setTimeout(1).
+bool tryMQTT()
 {
-  while (!mqttClient.connected())
+  String clientId = "floor" + String(FLOOR_NUMBER) + FLOOR_AREA + "-" + String(random(0xffff), HEX);
+  Serial.print("Connecting to MQTT as ");
+  Serial.print(clientId);
+  Serial.print("...");
+  if (mqttClient.connect(clientId.c_str()))
   {
-    String clientId = "floor" + String(FLOOR_NUMBER) + FLOOR_AREA + "-" + String(random(0xffff), HEX);
-    Serial.print("Connecting to MQTT as ");
-    Serial.print(clientId);
-    Serial.print("...");
-    if (mqttClient.connect(clientId.c_str()))
-    {
-      Serial.println(" connected.");
-      mqttClient.publish(topicStatus, "online", true);
-      mqttClient.subscribe(topicAlert);  // recover alert state across a restart
+    Serial.println(" connected.");
+    mqttClient.publish(topicStatus, "online", true);
+    mqttClient.subscribe(topicAlert);  // recover alert state across a restart
 
-      // Re-assert an alert we are already holding. The broker may have lost its
-      // retained store (restarted without persistence, or crashed between
-      // autosaves), and publishAlert() only fires on a state change - so
-      // without this the ground unit would go dark while we are still alarming.
-      // At boot alertActive is false, so this never overwrites a retained ALERT
-      // before the subscription above has had a chance to restore it.
-      if (alertActive)
-        publishAlert(true);
-    }
-    else
+    // Re-assert an alert we are already holding. The broker may have lost its
+    // retained store (restarted without persistence, or crashed between
+    // autosaves), and publishAlert() only fires on a state change - so
+    // without this the ground unit would go dark while we are still alarming.
+    // At boot alertActive is false, so this never overwrites a retained ALERT
+    // before the subscription above has had a chance to restore it.
+    if (alertActive)
+      publishAlert(true);
+    return true;
+  }
+  Serial.print(" failed, rc=");
+  Serial.println(mqttClient.state());
+  return false;
+}
+
+// Keeps WiFi and MQTT up without blocking loop(). The ESP32 core auto-reconnects
+// WiFi for most drop reasons, but not for WIFI_REASON_ASSOC_LEAVE (the AP kicked
+// us) or AUTH_FAIL - re-arming here covers those. If nothing has worked for
+// OFFLINE_RESTART_MS we restart as a last resort.
+void maintainConnectivity()
+{
+  bool wifiUp = (WiFi.status() == WL_CONNECTED);
+
+  if (!wifiUp && millis() - lastWiFiAttempt >= WIFI_RETRY_MS)
+  {
+    Serial.println("WiFi down - re-arming.");
+    WiFi.disconnect();
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    lastWiFiAttempt = millis();
+  }
+
+  bool online = false;
+  if (wifiUp)
+  {
+    if (mqttClient.connected())
+      online = true;
+    else if (millis() - lastMqttAttempt >= mqttRetryGap)
     {
-      Serial.print(" failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(". Retrying in 3s.");
-      buzzerDelay(3000);  // keep alarming locally while the broker is unreachable
+      lastMqttAttempt = millis();
+      online = tryMQTT();
+      // Back off while the broker is unreachable, so its socket timeout does
+      // not interrupt the buzzer every few seconds.
+      mqttRetryGap = online ? MQTT_RETRY_MIN_MS
+                            : min(mqttRetryGap * 2, MQTT_RETRY_MAX_MS);
     }
+  }
+
+  // Restart only for a prolonged WiFi loss - that is the failure a restart can
+  // actually fix (a wedged stack the core will not recover from). If WiFi is
+  // fine and only the broker is unreachable, restarting would achieve nothing
+  // and would throw away the alert we are still sounding; the backoff above
+  // plus the 2 h RESET_INTERVAL cover that case.
+  if (wifiUp)
+    wifiDownSince = 0;
+  else if (wifiDownSince == 0)
+    wifiDownSince = millis();
+  else if (millis() - wifiDownSince >= OFFLINE_RESTART_MS)
+  {
+    Serial.println("WiFi down too long - restarting ESP");
+    Serial.flush();
+    ESP.restart();
   }
 }
 
@@ -204,10 +267,12 @@ void setup()
   buzzer.begin(BUZZER_PIN);
   setLocalAlert(false);
 
+  espClient.setTimeout(1);  // cap a failed socket connect at ~1 s, not 3 s
+
   connectWiFi();
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
-  connectMQTT();
+  maintainConnectivity();
 
   Serial.print("Floor ");
   Serial.print(FLOOR_NUMBER);
@@ -222,10 +287,13 @@ void loop()
     ESP.restart();
   }
 
-  if (!mqttClient.connected())
-    connectMQTT();
+  maintainConnectivity();
   mqttClient.loop();
 
+  // Runs every iteration regardless of network state, so an outage never
+  // freezes the buzzer mid-note. The sensor sweep and the button below stay
+  // live too, so an alert can still be acknowledged while offline - the CLEAR
+  // is published as soon as the broker comes back.
   buzzer.update(alertMask());
 
   // --- Periodic sensor reading ---

@@ -70,40 +70,103 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
   updateLEDs();
 }
 
+// ============ CONNECTIVITY ============
+unsigned long lastWiFiAttempt = 0;
+unsigned long lastMqttAttempt = 0;
+unsigned long mqttRetryGap = MQTT_RETRY_MIN_MS;
+unsigned long wifiDownSince = 0;  // millis() when WiFi dropped; 0 = up
+
 void connectWiFi()
 {
   Serial.print("Connecting to WiFi");
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
+
+  // Bounded wait. If the AP is not up yet we carry on into loop() and keep
+  // retrying there, rather than hanging in setup() forever with no alerts
+  // being serviced and the 2 h restart unable to fire.
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_BOOT_TIMEOUT_MS)
   {
     blinkLEDs();
     Serial.print(".");
   }
-  Serial.print(" Connected. IP: ");
-  Serial.println(WiFi.localIP());
+  lastWiFiAttempt = millis();
+
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.print(" Connected. IP: ");
+    Serial.println(WiFi.localIP());
+  }
+  else
+    Serial.println(" not up yet - will keep retrying in the background.");
 }
 
-void connectMQTT()
+// One MQTT attempt. Blocks only for the socket timeout, capped to 1 s in
+// setup() via espClient.setTimeout(1).
+bool tryMQTT()
 {
-  while (!mqttClient.connected())
+  String clientId = "groundfloor-" + String(random(0xffff), HEX);
+  Serial.print("Connecting to MQTT as ");
+  Serial.print(clientId);
+  Serial.print("...");
+  if (mqttClient.connect(clientId.c_str()))
   {
-    String clientId = "groundfloor-" + String(random(0xffff), HEX);
-    Serial.print("Connecting to MQTT as ");
-    Serial.print(clientId);
-    Serial.print("...");
-    if (mqttClient.connect(clientId.c_str()))
+    Serial.println(" connected.");
+    mqttClient.subscribe("warehouse/floor/+/+/alert");  // retained alerts replay here
+    return true;
+  }
+  Serial.print(" failed, rc=");
+  Serial.println(mqttClient.state());
+  return false;
+}
+
+// Keeps WiFi and MQTT up without blocking loop(). The ESP32 core auto-reconnects
+// WiFi for most drop reasons, but not for WIFI_REASON_ASSOC_LEAVE (the AP kicked
+// us) or AUTH_FAIL - re-arming here covers those. If nothing has worked for
+// OFFLINE_RESTART_MS we restart as a last resort.
+void maintainConnectivity()
+{
+  bool wifiUp = (WiFi.status() == WL_CONNECTED);
+
+  if (!wifiUp && millis() - lastWiFiAttempt >= WIFI_RETRY_MS)
+  {
+    Serial.println("WiFi down - re-arming.");
+    WiFi.disconnect();
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    lastWiFiAttempt = millis();
+  }
+
+  bool online = false;
+  if (wifiUp)
+  {
+    if (mqttClient.connected())
+      online = true;
+    else if (millis() - lastMqttAttempt >= mqttRetryGap)
     {
-      Serial.println(" connected.");
-      mqttClient.subscribe("warehouse/floor/+/+/alert");
+      lastMqttAttempt = millis();
+      online = tryMQTT();
+      // Back off while the broker is unreachable, so its socket timeout does
+      // not interrupt the buzzer every few seconds.
+      mqttRetryGap = online ? MQTT_RETRY_MIN_MS
+                            : min(mqttRetryGap * 2, MQTT_RETRY_MAX_MS);
     }
-    else
-    {
-      Serial.print(" failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(". Retrying in 3s.");
-      delay(3000);
-    }
+  }
+
+  // Restart only for a prolonged WiFi loss - that is the failure a restart can
+  // actually fix (a wedged stack the core will not recover from). If WiFi is
+  // fine and only the broker is unreachable, restarting would achieve nothing
+  // and would throw away the alerts we are still displaying; the backoff above
+  // plus the 2 h RESET_INTERVAL cover that case.
+  if (wifiUp)
+    wifiDownSince = 0;
+  else if (wifiDownSince == 0)
+    wifiDownSince = millis();
+  else if (millis() - wifiDownSince >= OFFLINE_RESTART_MS)
+  {
+    Serial.println("WiFi down too long - restarting ESP");
+    Serial.flush();
+    ESP.restart();
   }
 }
 
@@ -121,10 +184,12 @@ void setup()
   }
   buzzer.begin(BUZZER_PIN);
 
+  espClient.setTimeout(1);  // cap a failed socket connect at ~1 s, not 3 s
+
   connectWiFi();
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
-  connectMQTT();
+  maintainConnectivity();
 
   Serial.println("Ground floor unit ready.");
 }
@@ -137,9 +202,12 @@ void loop()
     ESP.restart();
   }
 
-  if (!mqttClient.connected())
-    connectMQTT();
+  maintainConnectivity();
   mqttClient.loop();
 
+  // Runs every iteration regardless of network state, so an outage never
+  // freezes the buzzer mid-note. The LEDs keep their last known state too -
+  // an alert stays visible while the network is down, and re-syncs from the
+  // retained messages once we resubscribe.
   buzzer.update(alertMask());
 }
